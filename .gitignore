@@ -1,0 +1,10 @@
+node_modules
+# Keep environment variables out of version control
+.env
+tmp
+dist
+.yarn
+yarn.lock
+.cache
+cache
+google-sheet-key.json
