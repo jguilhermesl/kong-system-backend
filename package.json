@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src",
+    "start": "node ./dist/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +20,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "googleapis": "^144.0.0",
+    "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "zod": "^3.24.1"
   },
