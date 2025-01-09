@@ -1,10 +1,8 @@
 import { google } from 'googleapis';
-import { readFileSync } from 'fs';
-import path from 'path';
+import { env } from '../env';
 import { User } from '@/models/User';
 import { randomUUID } from 'crypto';
 
-const KEY_FILE_PATH = path.join(process.cwd(), 'google-sheet-key.json');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
 const DEFAULT_SHEET_NAME = 'users_kg_system';
@@ -13,7 +11,10 @@ const DATA_STARTS_AT_LINE = 2;
 
 type DaoType = User;
 
-const credentials = JSON.parse(readFileSync(KEY_FILE_PATH, 'utf8'));
+const credentials = {
+  client_email: env.GOOGLE_CLIENT_EMAIL,
+  private_key: env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+};
 const auth = new google.auth.GoogleAuth({
   credentials,
   scopes: SCOPES,
