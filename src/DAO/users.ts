@@ -11,10 +11,10 @@ const DATA_STARTS_AT_LINE = 2;
 
 type DaoType = User;
 
-const credentials = {
-  client_email: env.GOOGLE_CLIENT_EMAIL,
-  private_key: env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-};
+const base64EncodedServiceAccount = env.GOOGLE_ENCODED_BASE;
+const decodedServiceAccount = Buffer.from(base64EncodedServiceAccount, 'base64').toString('utf-8');
+const credentials = JSON.parse(decodedServiceAccount);
+
 const auth = new google.auth.GoogleAuth({
   credentials,
   scopes: SCOPES,
@@ -52,7 +52,6 @@ export class UsersDAO {
 
   async findOne(where: Partial<Record<keyof DaoType, (value: any) => boolean>>) {
     const data = await this.getData();
-
     if (Object.keys(where).length === 0) {
       return data[0] || null;
     }
@@ -90,7 +89,7 @@ export class UsersDAO {
     });
   }
 
-  async createOne(values: Omit<DaoType, "id">) {
+  async createOne(values: Omit<DaoType, "id" | "createdAt">) {
     const row = this.getRow(values);
     await sheets.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
@@ -167,14 +166,13 @@ export class UsersDAO {
 
   private getRow(data: DaoType | Partial<DaoType>) {
     return [
-      data.id,
       data.name,
       data.phone,
       data.cpf,
       data.email,
       data.passwordHash,
       data.role,
-      data.createdAt,
+      data.createdAt = new Date()
     ];
   }
 

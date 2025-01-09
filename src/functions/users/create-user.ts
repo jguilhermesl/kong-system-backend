@@ -1,27 +1,38 @@
 import { UsersDAO } from "@/DAO/users";
 import { handleErrors } from "@/utils/handle-errors";
-import { Request, Response } from "express";
+import { hash } from "bcrypt";
+import { parse } from "path";
 import { z } from "zod";
 
 const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  role: z.enum(["admin", "client"]),
+  role: z.enum(["admin", "client"]).default("client"),
   email: z.string().email("Invalid email format"),
   cpf: z.string().min(11, "CPF must be at least 11 characters"),
   phone: z.string().min(8, "Phone number must be at least 8 characters"),
-  passwordHash: z.string().min(4, "Password hash must be at least 4 characters"),
-  createdAt: z.union([z.date(), z.string().transform((val) => new Date(val))]),
+  password: z.string().min(4, "Password must be at least 4 characters"),
 });
 
 export const createUser = async (req: any, res: any) => {
   try {
     const parsedData = userSchema.parse(req.body);
 
+    const passwordHash = await hash(parsedData.password, 8);
+
     const dao = new UsersDAO();
-    const data = await dao.createOne(parsedData);
+    const userAlreadyExists = await dao.findOne({
+      email: (email) => email === parsedData.email
+    })
+
+    if (userAlreadyExists) {
+      return res.status(401).send({ message: "Usuário já existe." })
+    }
+
+    const data = await dao.createOne({ ...parsedData, passwordHash });
 
     return res.status(200).send({ data: data });
   } catch (err) {
+    console.log(err)
     const errorMessage = handleErrors(err);
 
     return res.status(500).send({ message: errorMessage });

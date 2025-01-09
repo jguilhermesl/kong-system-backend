@@ -3,7 +3,8 @@ declare namespace Express {
     userState: {
       sub: string,
       email: string,
-      name: string
+      name: string,
+      role: "admin" | "client"
     }
   };
 }
