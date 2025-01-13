@@ -126,10 +126,6 @@ export class UsersDAO {
       return null;
     }
 
-    console.log({
-      ...item,
-      ...updatedValues
-    })
     const values = this.getRow({
       ...item,
       ...updatedValues
@@ -154,19 +150,48 @@ export class UsersDAO {
       return null;
     }
 
-    const rowIndex = (await this.getData()).findIndex((i) => JSON.stringify(i) === JSON.stringify(item));
+    const data = await this.getData();
+    const rowIndex = data.findIndex((i) => JSON.stringify(i) === JSON.stringify(item));
 
     if (rowIndex === -1) {
       return null;
     }
 
-    const range = this.getRange(rowIndex);
-
-    await sheets.spreadsheets.values.clear({
+    const sheetInfo = await sheets.spreadsheets.get({
       spreadsheetId: this.spreadsheetId,
-      range,
     });
+
+    const sheet = sheetInfo.data.sheets?.find(sheet => sheet.properties?.title === DEFAULT_SHEET_NAME);
+    if (!sheet) {
+      return null;
+    }
+
+    const sheetId = sheet.properties?.sheetId;
+
+    const requests = [
+      {
+        deleteDimension: {
+          range: {
+            sheetId: sheetId,
+            dimension: 'ROWS',
+            startIndex: rowIndex + 1,
+            endIndex: rowIndex + 2,
+          }
+        }
+      }
+    ];
+
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: this.spreadsheetId,
+      requestBody: {
+        requests,
+      },
+    });
+
+    return item;
   }
+
+
 
   private getRow(data: DaoType | Partial<DaoType>) {
     return [
