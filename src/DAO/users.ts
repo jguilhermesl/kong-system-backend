@@ -96,7 +96,7 @@ export class UsersDAO {
       range: `${DEFAULT_SHEET_NAME}`,
       valueInputOption: VALUE_INPUT_OPTION,
       requestBody: {
-        values: [[randomUUID(), ...row]],
+        values: [[...row]],
       },
     });
   }
@@ -126,6 +126,10 @@ export class UsersDAO {
       return null;
     }
 
+    console.log({
+      ...item,
+      ...updatedValues
+    })
     const values = this.getRow({
       ...item,
       ...updatedValues
@@ -166,6 +170,7 @@ export class UsersDAO {
 
   private getRow(data: DaoType | Partial<DaoType>) {
     return [
+      data.id || randomUUID(),
       data.name,
       data.phone,
       data.cpf,
