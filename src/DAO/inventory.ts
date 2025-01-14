@@ -1,15 +1,16 @@
 import { google } from 'googleapis';
 import { env } from '../env';
-import { User } from '@/models/User';
+import { InventoryItem } from '@/models/Inventory';
+import { UsersDAO } from './users';
 import { randomUUID } from 'crypto';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
-const DEFAULT_SHEET_NAME = 'users_kg_system';
+const DEFAULT_SHEET_NAME = 'estoque_kg_system';
 const VALUE_INPUT_OPTION = 'RAW';
-const DATA_STARTS_AT_LINE = 2;
+const DATA_STARTS_AT_LINE = 1;
 
-type DaoType = User;
+type DaoType = InventoryItem;
 
 const base64EncodedServiceAccount = env.GOOGLE_ENCODED_BASE;
 const decodedServiceAccount = Buffer.from(base64EncodedServiceAccount, 'base64').toString('utf-8');
@@ -20,8 +21,9 @@ const auth = new google.auth.GoogleAuth({
   scopes: SCOPES,
 });
 const sheets = google.sheets({ version: 'v4', auth });
+const usersDao = new UsersDAO();
 
-export class UsersDAO {
+export class InventoryDAO {
   private spreadsheetId: string;
   private cachedData: DaoType[] = [];
 
@@ -30,39 +32,50 @@ export class UsersDAO {
   }
 
   private async getData() {
-    if (this.cachedData.length > 0) {
-      return this.cachedData;
-    }
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: this.spreadsheetId,
+      range: `${DEFAULT_SHEET_NAME}!A${DATA_STARTS_AT_LINE}:AB`,
+    });
 
-    try {
-      const response = await sheets.spreadsheets.values.get({
-        spreadsheetId: this.spreadsheetId,
-        range: `${DEFAULT_SHEET_NAME}!A${DATA_STARTS_AT_LINE}:Z`,
-      });
+    const clients = await usersDao.findMany({});
 
-      const data = response.data.values?.map((item) => ({
-        id: item[0],
-        name: item[1],
-        phone: item[2],
-        cpf: item[3],
-        email: item[4],
-        passwordHash: item[5],
-        role: item[6],
-        createdAt: item[7],
-      })) as DaoType[];
+    const data =
+      response.data.values?.map((item) => {
 
-      this.cachedData = data;
+        const client = clients.find((c) => c.phone === item[19]) || {
+          name: item[18],
+          phone: item[19],
+          email: item[20]
+        };
 
-      return data || [];
-    } catch (error) {
-      console.error("Error fetching data from Google Sheets:", error);
-      return [];
-    }
+        return {
+          id: item[27],
+          soldAt: item[0],
+          game: item[1],
+          email: item[2],
+          recoverEmail: item[3],
+          emailPassword: item[4],
+          recoverPhone: item[5],
+          psnUser: item[6],
+          psnPassword: item[7],
+          gameVersion: item[8],
+          accountType: item[9],
+          gameValue: item[10],
+          accountValue: item[12],
+          sold: item[13],
+          client,
+          soldBy: item[21]
+        };
+      }
+      ).filter((item) => !!item.game) as DaoType[];
+
+    this.cachedData = data;
+
+    return data || [];
   }
 
   async findOne(where: Partial<Record<keyof DaoType, (value: any) => boolean>>) {
     const data = await this.getData();
-
     if (Object.keys(where).length === 0) {
       return data[0] || null;
     }
@@ -113,7 +126,7 @@ export class UsersDAO {
   }
 
   async createMany(dataValues: DaoType[]) {
-    const rows = dataValues.map(this.getRow);
+    const rows = dataValues.map((item) => this.getRow(item));
     await sheets.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
       range: `${DEFAULT_SHEET_NAME}`,
@@ -137,10 +150,14 @@ export class UsersDAO {
       return null;
     }
 
-    const values = this.getRow({
-      ...item,
-      ...updatedValues
+    const originalRowResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: this.spreadsheetId,
+      range: this.getRange(rowIndex)
     });
+
+    const originalRow = originalRowResponse.data.values?.[0] ?? [];
+
+    const values = this.getRow(updatedValues, originalRow);
 
     const range = this.getRange(rowIndex);
 
@@ -151,6 +168,7 @@ export class UsersDAO {
       requestBody: {
         values: [values],
       },
+      responseValueRenderOption: "UNFORMATTED_VALUE",
     });
   }
 
@@ -204,20 +222,44 @@ export class UsersDAO {
 
 
 
-  private getRow(data: DaoType | Partial<DaoType>) {
+  private getRow(data: Partial<DaoType>, originalRow?: string[]): (string | boolean | number | undefined)[] {
     return [
-      data.id || randomUUID(),
-      data.name,
-      data.phone,
-      data.cpf,
+      '',
+      data.game,
       data.email,
-      data.passwordHash,
-      data.role,
-      data.createdAt = new Date()
-    ];
+      data.recoverEmail,
+      data.emailPassword,
+      data.recoverPhone,
+      data.psnUser,
+      '',
+      '',
+      '',
+      '',
+      '',
+      data.accountValue,
+      data.sold,
+      '',
+      '',
+      '',
+      '',
+      data.client?.name,
+      data.client?.phone,
+      data.client?.email,
+      data.soldBy,
+      '',
+      '',
+      '',
+      '',
+      '',
+      data.id,
+    ].map((item, idx) => {
+      return item || originalRow[idx]
+    });
   }
 
+
   private getRange(rowIndex: number): string {
-    return `${DEFAULT_SHEET_NAME}!A${rowIndex + DATA_STARTS_AT_LINE}:Z${rowIndex + DATA_STARTS_AT_LINE}`;
+    return `${DEFAULT_SHEET_NAME}!A${rowIndex + DATA_STARTS_AT_LINE}:AB${rowIndex + DATA_STARTS_AT_LINE}`;
   }
 }
+
