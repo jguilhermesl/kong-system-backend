@@ -1,11 +1,11 @@
 import { UsersDAO } from "@/DAO/users";
 import { handleErrors } from "@/utils/handle-errors";
 
-export const fetchUsers = async (req: any, res: any) => {
+export const fetchClients = async (req: any, res: any) => {
   try {
     const dao = new UsersDAO();
     const data = await dao.findMany({
-      createdAt: (createdAt) => !!createdAt,
+      role: (role) => role === "client"
     });
 
     return res.status(200).send({ data: data });
