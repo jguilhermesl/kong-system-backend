@@ -1,5 +1,6 @@
 import { InventoryDAO } from "@/DAO/inventory";
 import { UsersDAO } from "@/DAO/users";
+import { IndicationsDAO } from "@/DAO/indications";
 import { handleErrors } from "@/utils/handle-errors";
 import { z } from "zod";
 
@@ -7,6 +8,7 @@ const addInventorySaleSchema = z.object({
   clientId: z.string(),
   saleValue: z.number().positive({ message: "Sale value must be a positive number." }),
   sellerName: z.string().min(1, { message: "Seller name is required." }),
+  indicationCode: z.string().min(1, { message: "Indication code is required." }),
 });
 
 export const addInventorySale = async (req: any, res: any) => {
@@ -25,7 +27,7 @@ export const addInventorySale = async (req: any, res: any) => {
     })
 
     if (!client) {
-      return res.status(403).send({ message: "Cliente não encontrado." })
+      throw new Error("Cliente não encontrado.")
     }
 
     if (inventory) {
@@ -40,9 +42,24 @@ export const addInventorySale = async (req: any, res: any) => {
       })
     }
 
+    if (parsedData.indicationCode) {
+      const indicationsDAO = new IndicationsDAO();
+      const indicatorUser = await usersDAO.findOne({
+        code: (code) => code === parsedData.indicationCode
+      })
+
+      if (!indicatorUser) {
+        throw new Error("Código inválido. Usuário não encontrado.")
+      }
+
+      await indicationsDAO.createOne({
+        userId: indicatorUser.id,
+        inventoryId: inventoryId,
+      });
+    }
+
     return res.status(200).send({ data: "Adicionado!" });
   } catch (err) {
-    console.log(err)
     const errorMessage = handleErrors(err);
 
     return res.status(500).send({ message: errorMessage });
