@@ -1,7 +1,6 @@
 import { UsersDAO } from "@/DAO/users";
 import { handleErrors } from "@/utils/handle-errors";
 import { hash } from "bcrypt";
-import { parse } from "path";
 import { z } from "zod";
 
 const userSchema = z.object({
@@ -11,6 +10,7 @@ const userSchema = z.object({
   cpf: z.string().min(11, "CPF must be at least 11 characters"),
   phone: z.string().min(8, "Phone number must be at least 8 characters"),
   password: z.string().min(4, "Password must be at least 4 characters"),
+  console: z.enum(["PS4", "PS5"]).optional()
 });
 
 export const createUser = async (req: any, res: any) => {
@@ -28,7 +28,8 @@ export const createUser = async (req: any, res: any) => {
       return res.status(401).send({ message: "Usuário já existe." })
     }
 
-    const data = await dao.createOne({ ...parsedData, passwordHash });
+    const code = generateRandomCode();
+    const data = await dao.createOne({ ...parsedData, passwordHash, code });
 
     return res.status(200).send({ data: data });
   } catch (err) {

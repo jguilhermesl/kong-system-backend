@@ -7,4 +7,6 @@ export interface User {
   phone: string,
   passwordHash: string,
   createdAt: Date | string,
+  console?: "PS4" | "PS5",
+  code: string
 }

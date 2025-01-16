@@ -2,13 +2,13 @@ import { google } from 'googleapis';
 import { env } from '../env';
 import { InventoryItem } from '@/models/Inventory';
 import { UsersDAO } from './users';
-import { randomUUID } from 'crypto';
+import { formatCurrencyToNumber } from '@/utils/format-currency-to-number';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
-const DEFAULT_SHEET_NAME = 'estoque_kg_system';
+const DEFAULT_SHEET_NAME = 'TABELA DE JOGOS';
 const VALUE_INPUT_OPTION = 'RAW';
-const DATA_STARTS_AT_LINE = 1;
+const DATA_STARTS_AT_LINE = 16;
 
 type DaoType = InventoryItem;
 
@@ -45,7 +45,8 @@ export class InventoryDAO {
         const client = clients.find((c) => c.phone === item[19]) || {
           name: item[18],
           phone: item[19],
-          email: item[20]
+          email: item[20],
+          console: item[22]
         };
 
         return {
@@ -61,6 +62,7 @@ export class InventoryDAO {
           gameVersion: item[8],
           accountType: item[9],
           gameValue: item[10],
+          purchaseValue: item[11],
           accountValue: item[12],
           sold: item[13],
           client,
@@ -157,7 +159,7 @@ export class InventoryDAO {
 
     const originalRow = originalRowResponse.data.values?.[0] ?? [];
 
-    const values = this.getRow(updatedValues, originalRow);
+    const values = this.getRow({ ...item, ...updatedValues }, originalRow);
 
     const range = this.getRange(rowIndex);
 
@@ -235,7 +237,7 @@ export class InventoryDAO {
       '',
       '',
       '',
-      '',
+      formatCurrencyToNumber(data.purchaseValue || ""),
       data.accountValue,
       data.sold,
       '',
@@ -250,7 +252,7 @@ export class InventoryDAO {
       '',
       '',
       '',
-      '',
+      'Pendente',
       data.id,
     ].map((item, idx) => {
       return item || originalRow[idx]

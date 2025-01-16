@@ -49,6 +49,8 @@ export class UsersDAO {
         passwordHash: item[5],
         role: item[6],
         createdAt: item[7],
+        code: item[8],
+        console: item[9],
       })) as DaoType[];
 
       this.cachedData = data;
@@ -213,7 +215,9 @@ export class UsersDAO {
       data.email,
       data.passwordHash,
       data.role,
-      data.createdAt = new Date()
+      data.createdAt = new Date(),
+      data.code,
+      data.console
     ];
   }
 
