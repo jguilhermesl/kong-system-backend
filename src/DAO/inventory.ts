@@ -40,7 +40,7 @@ export class InventoryDAO {
     const clients = await usersDao.findMany({});
 
     const data =
-      response.data.values?.map((item) => {
+      response.data.values?.map((item, index) => {
 
         const client = clients.find((c) => c.phone === item[19]) || {
           name: item[18],
@@ -66,7 +66,8 @@ export class InventoryDAO {
           accountValue: item[12],
           sold: item[13],
           client,
-          soldBy: item[21]
+          soldBy: item[21],
+          range: index
         };
       }
       ).filter((item) => !!item.game) as DaoType[];
@@ -142,26 +143,28 @@ export class InventoryDAO {
   async updateOne(where: Partial<Record<keyof DaoType, (value: any) => boolean>>, updatedValues: Partial<DaoType>) {
     const item = await this.findOne(where);
 
+    console.log(item)
+
     if (!item) {
       return null;
     }
 
-    const rowIndex = (await this.getData()).findIndex((i) => JSON.stringify(i) === JSON.stringify(item));
+    const row = (await this.getData()).find((i) => JSON.stringify(i) === JSON.stringify(item));
 
-    if (rowIndex === -1) {
+    if (!row?.range) {
       return null;
     }
 
     const originalRowResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: this.spreadsheetId,
-      range: this.getRange(rowIndex)
+      range: this.getRange(row.range)
     });
 
     const originalRow = originalRowResponse.data.values?.[0] ?? [];
 
     const values = this.getRow({ ...item, ...updatedValues }, originalRow);
 
-    const range = this.getRange(rowIndex);
+    const range = this.getRange(row.range);
 
     await sheets.spreadsheets.values.update({
       spreadsheetId: this.spreadsheetId,
@@ -182,9 +185,9 @@ export class InventoryDAO {
     }
 
     const data = await this.getData();
-    const rowIndex = data.findIndex((i) => JSON.stringify(i) === JSON.stringify(item));
+    const row = data.find((i) => JSON.stringify(i) === JSON.stringify(item));
 
-    if (rowIndex === -1) {
+    if (!row?.range) {
       return null;
     }
 
@@ -205,8 +208,8 @@ export class InventoryDAO {
           range: {
             sheetId: sheetId,
             dimension: 'ROWS',
-            startIndex: rowIndex + 1,
-            endIndex: rowIndex + 2,
+            startIndex: row.range + 1,
+            endIndex: row.range + 2,
           }
         }
       }
@@ -248,14 +251,18 @@ export class InventoryDAO {
       data.client?.phone,
       data.client?.email,
       data.soldBy,
+      data.client?.console,
       '',
-      '',
-      '',
+      false,
       '',
       'Pendente',
       data.id,
     ].map((item, idx) => {
-      return item || originalRow[idx]
+      if (originalRow) {
+        return item === '' ? originalRow[idx] : item;
+      } else {
+        return item;
+      }
     });
   }
 
