@@ -63,7 +63,8 @@ export class IndicationsDAO {
             inventory,
             userId: item[2],
             user,
-            createdAt: item[3]
+            createdAt: item[3],
+            usedAt: item[4]
           };
         }
         ).filter((item) => !!item && !!item) as DaoType[];
@@ -118,7 +119,7 @@ export class IndicationsDAO {
   }
 
   async createOne(values: Omit<DaoType, "id" | "createdAt">) {
-    const row = this.getRow(values);
+    const row = this.getRow({ ...values, createdAt: new Date().toISOString() });
     await sheets.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
       range: `${DEFAULT_SHEET_NAME}`,
@@ -221,11 +222,11 @@ export class IndicationsDAO {
 
   private getRow(data: Partial<DaoType>, originalRow?: string[]): (string | boolean | number | undefined)[] {
     return [
-      '',
-      data.inventoryId,
-      data.user?.id,
-      data.createdAt,
       data.id || randomUUID(),
+      data.inventoryId,
+      data.userId,
+      data.createdAt,
+      data.usedAt
     ].map((item, idx) => {
       return item || originalRow?.[idx];
     });

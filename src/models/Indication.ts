@@ -8,4 +8,5 @@ export interface Indication {
   inventoryId: string,
   inventory?: InventoryItem,
   createdAt: string,
+  usedAt?: string
 }

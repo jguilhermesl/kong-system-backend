@@ -42,11 +42,13 @@ export const addInventorySale = async (req: any, res: any) => {
       })
     }
 
+    console.log("parsed Data ==> ", parsedData.indicationCode)
     if (parsedData.indicationCode) {
       const indicationsDAO = new IndicationsDAO();
       const indicatorUser = await usersDAO.findOne({
         code: (code) => code === parsedData.indicationCode
       })
+      console.log("indicatorUser==> ", indicatorUser)
 
       if (!indicatorUser) {
         throw new Error("Código inválido. Usuário não encontrado.")
