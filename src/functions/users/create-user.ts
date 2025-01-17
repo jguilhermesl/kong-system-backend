@@ -1,4 +1,5 @@
 import { UsersDAO } from "@/DAO/users";
+import { generateRandomCode } from "@/utils/generate-6-random-code";
 import { handleErrors } from "@/utils/handle-errors";
 import { hash } from "bcrypt";
 import { z } from "zod";

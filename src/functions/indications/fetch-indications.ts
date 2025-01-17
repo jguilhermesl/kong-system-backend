@@ -1,5 +1,5 @@
 import { IndicationsDAO } from "@/DAO/indications";
-import { calculateCashback } from "@/utils/calculate-cashback";
+import { calculatePoints } from "@/utils/calculate-points";
 import { handleErrors } from "@/utils/handle-errors";
 
 export const fetchIndications = async (req: any, res: any) => {
@@ -13,7 +13,7 @@ export const fetchIndications = async (req: any, res: any) => {
     const indications = data.map((i) => {
       return {
         ...i,
-        cashback: calculateCashback(i.inventory?.accountValue.toString())
+        points: calculatePoints(i.inventory?.accountValue.toString())
       }
     })
 
