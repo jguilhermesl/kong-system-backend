@@ -10,15 +10,18 @@ const userSchema = z.object({
   email: z.string().email("Invalid email format"),
   cpf: z.string().min(11, "CPF must be at least 11 characters"),
   phone: z.string().min(8, "Phone number must be at least 8 characters"),
-  password: z.string().min(4, "Password must be at least 4 characters"),
+  password: z.string().min(4, "Password must be at least 4 characters").optional(),
   console: z.enum(["PS4", "PS5"]).optional()
 });
 
 export const createUser = async (req: any, res: any) => {
   try {
     const parsedData = userSchema.parse(req.body);
+    let passwordHash = ''
 
-    const passwordHash = await hash(parsedData.password, 8);
+    if (parsedData.password) {
+      passwordHash = await hash(parsedData.password, 8);
+    }
 
     const dao = new UsersDAO();
     const userAlreadyExists = await dao.findOne({
