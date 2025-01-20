@@ -2,6 +2,7 @@ import { UsersDAO } from "@/DAO/users";
 import { generateRandomCode } from "@/utils/generate-6-random-code";
 import { handleErrors } from "@/utils/handle-errors";
 import { hash } from "bcrypt";
+import { Request, Response } from "express";
 import { z } from "zod";
 
 const userSchema = z.object({
@@ -14,7 +15,7 @@ const userSchema = z.object({
   console: z.enum(["PS4", "PS5"]).optional()
 });
 
-export const createUser = async (req: any, res: any) => {
+export const createUser = async (req: Request, res: Response) => {
   try {
     const parsedData = userSchema.parse(req.body);
     let passwordHash = ''

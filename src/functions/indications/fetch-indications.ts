@@ -7,7 +7,7 @@ export const fetchIndications = async (req: any, res: any) => {
     const { userId } = req.query;
     const dao = new IndicationsDAO();
     const data = userId
-      ? await dao.findMany({ user: (user) => user.id === userId })
+      ? await dao.findMany({ user: (user) => user?.id === userId })
       : await dao.findMany({});
 
     const indications = data.map((i) => {
