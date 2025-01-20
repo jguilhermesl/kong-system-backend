@@ -39,7 +39,17 @@ export const fetchStatement = async (req: any, res: any) => {
       (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
 
-    return res.status(200).send({ data: statement });
+    // Calculate the balance
+    let balance = 0;
+    statement.forEach((entry: any) => {
+      if (entry.type === "indication" || entry.type === "purchase") {
+        balance += entry.points;
+      } else {
+        balance -= entry.points;
+      }
+    });
+
+    return res.status(200).send({ data: statement, balance });
   } catch (err) {
     const errorMessage = handleErrors(err);
     return res.status(500).send({ message: errorMessage });
