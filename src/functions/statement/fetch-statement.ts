@@ -13,8 +13,8 @@ export const fetchStatement = async (req: any, res: any) => {
     const inventoryDAO = new InventoryDAO();
 
     const [dataIndications, pointsUsages, userPurchases] = await Promise.all([
-      indicationsDAO.findMany({ user: (user) => user.id === userId }),
-      pointsUsageDAO.findMany({ user: (user) => user.id === userId }),
+      indicationsDAO.findMany({ user: (user) => user?.id === userId }),
+      pointsUsageDAO.findMany({ user: (user) => user?.id === userId }),
       inventoryDAO.findMany({
         client: (client) => client.id === userId,
         soldAt: (soldAt) => new Date(soldAt) > new Date("01/16/2024"),
