@@ -13,7 +13,7 @@ export const fetchIndications = async (req: any, res: any) => {
     const indications = data.map((i) => {
       return {
         ...i,
-        points: calculatePoints(i.inventory?.accountValue.toString())
+        points: calculatePoints(i.inventory?.accountValue.toString() || "", true)
       }
     })
 

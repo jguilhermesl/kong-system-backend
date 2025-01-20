@@ -23,7 +23,7 @@ export const fetchStatement = async (req: any, res: any) => {
 
     const indications = dataIndications.map((indication) => ({
       ...indication,
-      points: calculatePoints(indication.inventory?.accountValue.toString() || "0"),
+      points: calculatePoints(indication.inventory?.accountValue.toString() || "0", true),
       type: "indication"
     }));
 
@@ -31,7 +31,7 @@ export const fetchStatement = async (req: any, res: any) => {
       inventory: purchase,
       client: purchase.client,
       createdAt: new Date(purchase.soldAt || ""),
-      points: calculatePoints(purchase.accountValue.toString()),
+      points: calculatePoints(purchase.accountValue.toString(), false),
       type: "purchase"
     }));
 
