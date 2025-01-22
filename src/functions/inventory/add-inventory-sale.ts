@@ -8,7 +8,7 @@ const addInventorySaleSchema = z.object({
   clientId: z.string(),
   saleValue: z.number().positive({ message: "Sale value must be a positive number." }),
   sellerName: z.string().min(1, { message: "Seller name is required." }),
-  indicationCode: z.string().min(1, { message: "Indication code is required." }).optional(),
+  indicationCode: z.string().optional(),
 });
 
 export const addInventorySale = async (req: any, res: any) => {
