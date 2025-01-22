@@ -8,6 +8,7 @@ const userUpdateSchema = z.object({
   email: z.string().email("Invalid email format").optional(),
   cpf: z.string().min(11, "CPF must be at least 11 characters").optional(),
   phone: z.string().min(10, "Phone number must be at least 10 characters").optional(),
+  console: z.enum(["PS4", "PS5"]).optional()
 });
 
 export const updateUser = async (req: any, res: any) => {
