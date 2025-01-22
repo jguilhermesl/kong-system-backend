@@ -24,6 +24,27 @@ export const updateUser = async (req: any, res: any) => {
       return res.status(404).send({ message: "User not found" });
     }
 
+    if (parsedData.phone && parsedData.phone !== existingUser.phone) {
+      const phoneExists = await dao.findOne({ phone: (phone) => phone === parsedData.phone });
+      if (phoneExists) {
+        return res.status(400).send({ message: "Phone number already exists" });
+      }
+    }
+
+    if (parsedData.cpf && parsedData.cpf !== existingUser.cpf) {
+      const cpfExists = await dao.findOne({ cpf: (cpf) => cpf === parsedData.cpf });
+      if (cpfExists) {
+        return res.status(400).send({ message: "CPF already exists" });
+      }
+    }
+
+    if (parsedData.email && parsedData.email !== existingUser.email) {
+      const emailExists = await dao.findOne({ email: (email) => email === parsedData.email });
+      if (emailExists) {
+        return res.status(400).send({ message: "Email already exists" });
+      }
+    }
+
     const updatedUser = await dao.updateOne({ id: (id) => id === userId }, parsedData);
 
     return res.status(200).send({ data: updatedUser });
