@@ -1,6 +1,7 @@
 import { IndicationsDAO } from "@/DAO/indications";
 import { InventoryDAO } from "@/DAO/inventory";
 import { PointsUsageDAO } from "@/DAO/points-usage";
+import { UsersDAO } from "@/DAO/users";
 import { calculatePoints } from "@/utils/calculate-points";
 import { handleErrors } from "@/utils/handle-errors";
 
@@ -11,13 +12,18 @@ export const fetchStatement = async (req: any, res: any) => {
     const indicationsDAO = new IndicationsDAO();
     const pointsUsageDAO = new PointsUsageDAO();
     const inventoryDAO = new InventoryDAO();
+    const usersDAO = new UsersDAO();
+
+    const user = await usersDAO.findOne({
+      id: (id) => id === userId
+    })
 
     const [dataIndications, pointsUsages, userPurchases] = await Promise.all([
       indicationsDAO.findMany({ user: (user) => user?.id === userId }),
       pointsUsageDAO.findMany({ user: (user) => user?.id === userId }),
       inventoryDAO.findMany({
-        client: (client) => client.id === userId,
-        soldAt: (soldAt) => new Date(soldAt) > new Date("01/16/2024"),
+        client: (client) => client.phone === user?.phone,
+        soldAt: (soldAt) => new Date(soldAt) > new Date("01/01/2025"),
       }),
     ]);
 
