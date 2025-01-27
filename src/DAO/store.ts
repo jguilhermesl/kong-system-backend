@@ -1,17 +1,15 @@
 import { google } from 'googleapis';
 import { env } from '../env';
 import { randomUUID } from 'crypto';
-import { UsersDAO } from './users';
-import { PointsUsage } from '@/models/PointsUsage';
-import { StoreDAO } from './store';
+import { Store } from '@/models/Store';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
-const DEFAULT_SHEET_NAME = 'points_usage_kg_system';
+const DEFAULT_SHEET_NAME = 'store_kg_system';
 const VALUE_INPUT_OPTION = 'RAW';
 const DATA_STARTS_AT_LINE = 2;
 
-type DaoType = PointsUsage;
+type DaoType = Store;
 
 const base64EncodedServiceAccount = env.GOOGLE_ENCODED_BASE;
 const decodedServiceAccount = Buffer.from(base64EncodedServiceAccount, 'base64').toString('utf-8');
@@ -23,7 +21,7 @@ const auth = new google.auth.GoogleAuth({
 });
 const sheets = google.sheets({ version: 'v4', auth });
 
-export class PointsUsageDAO {
+export class StoreDAO {
   private spreadsheetId: string;
   private cachedData: DaoType[] = [];
 
@@ -42,30 +40,17 @@ export class PointsUsageDAO {
         range: `${DEFAULT_SHEET_NAME}!A${DATA_STARTS_AT_LINE}:Z`,
       });
 
-      const usersDao = new UsersDAO();
-      const users = await usersDao.findMany({});
-      const storeDao = new StoreDAO();
-      const store = await storeDao.findMany({});
-
       const data =
         response.data.values?.map((item) => {
-
-          const user = users.find((c) => c.id === item[2]) || null;
-          const storeItem = store.find((c) => c.id === item[5]) || null;
-
-          if (!user) {
-            return item;
-          }
-
           return {
             id: item[0],
-            points: item[1],
-            userId: item[2],
-            user,
-            createdAt: item[3],
-            status: item[4],
-            storeItemId: item[5],
-            storeItem,
+            price: item[1],
+            category: item[2],
+            game: item[3],
+            photoUrl: item[4],
+            type: item[5],
+            createdAt: item[6],
+            gameVersion: item[7],
           };
         }
         ).filter((item) => !!item && !!item) as DaoType[];
@@ -224,11 +209,13 @@ export class PointsUsageDAO {
   private getRow(data: Partial<DaoType>, originalRow?: string[]): (string | boolean | number | undefined)[] {
     return [
       data.id || randomUUID(),
-      data.points,
-      data.userId,
+      data.price,
+      data.category,
+      data.game,
+      data.photoUrl,
+      data.type,
       data.createdAt,
-      data.status,
-      data.storeItemId
+      data.gameVersion
     ].map((item, idx) => {
       return item || originalRow?.[idx];
     });

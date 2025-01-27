@@ -1,0 +1,24 @@
+import { PointsUsageDAO } from '@/DAO/points-usage';
+import { StoreDAO } from '@/DAO/store';
+import { handleErrors } from '@/utils/handle-errors';
+
+export const requestGame = async (req: any, res: any) => {
+  const { userId, storeItemId } = req.body;
+  const storeDAO = new StoreDAO();
+  const pointsUsageDAO = new PointsUsageDAO();
+
+  try {
+    const storeItem = await storeDAO.findOne({ id: (id) => id === storeItemId });
+    if (!storeItem) {
+      throw new Error('Store item not found.');
+    }
+    const points = storeItem.price;
+
+    await pointsUsageDAO.createOne({ userId, storeItemId, points, status: 'pending' });
+    res.status(201).json({ message: 'Game request recorded successfully.' });
+  } catch (err) {
+    const errorMessage = handleErrors(err)
+
+    return res.status(500).send({ message: errorMessage });
+  }
+};

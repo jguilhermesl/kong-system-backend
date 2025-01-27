@@ -5,5 +5,7 @@ export interface PointsUsage {
   userId: string,
   user?: User,
   createdAt: string,
-  points: number
+  points: number,
+  status: "pending" | "approved",
+  storeItemId: string
 }

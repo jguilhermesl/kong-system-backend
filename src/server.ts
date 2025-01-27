@@ -9,6 +9,7 @@ import { routerInventory } from "./functions/inventory/routes";
 import { routerClient } from "./functions/clients/routes";
 import { routerIndications } from "./functions/indications/routes";
 import { routerStatement } from "./functions/statement/routes";
+import { routerStore } from "./functions/store/routes";
 
 const PORT = env.PORT;
 const app = express();
@@ -24,5 +25,6 @@ app.use(routerAuth);
 app.use(routerClient);
 app.use(routerIndications);
 app.use(routerStatement);
+app.use(routerStore);
 
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}!!!`));

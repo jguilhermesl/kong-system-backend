@@ -52,6 +52,10 @@ export const addInventorySale = async (req: any, res: any) => {
         throw new Error("Código inválido. Usuário não encontrado.")
       }
 
+      if (indicatorUser.id === client.id) {
+        throw new Error("O cliente não pode usar o próprio código.")
+      }
+
       await indicationsDAO.createOne({
         userId: indicatorUser.id,
         inventoryId: inventoryId,

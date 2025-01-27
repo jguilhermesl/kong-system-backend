@@ -20,7 +20,7 @@ export const fetchStatement = async (req: any, res: any) => {
 
     const [dataIndications, pointsUsages, userPurchases] = await Promise.all([
       indicationsDAO.findMany({ user: (user) => user?.id === userId }),
-      pointsUsageDAO.findMany({ user: (user) => user?.id === userId }),
+      pointsUsageDAO.findMany({ user: (user) => user?.id === userId, status: (status) => status === "approved" }),
       inventoryDAO.findMany({
         client: (client) => client.phone === user?.phone,
         soldAt: (soldAt) => new Date(soldAt) > new Date("01/01/2025"),
@@ -29,7 +29,7 @@ export const fetchStatement = async (req: any, res: any) => {
 
     const indications = dataIndications.map((indication) => ({
       ...indication,
-      points: calculatePoints(indication.inventory?.accountValue.toString() || "0", true),
+      points: calculatePoints(indication.inventory?.accountValue.toString() || "0"),
       type: "indication"
     }));
 
@@ -37,7 +37,7 @@ export const fetchStatement = async (req: any, res: any) => {
       inventory: purchase,
       client: purchase.client,
       createdAt: new Date(purchase.soldAt || ""),
-      points: calculatePoints(purchase.accountValue.toString(), false),
+      points: calculatePoints(purchase.accountValue.toString()),
       type: "purchase"
     }));
 
