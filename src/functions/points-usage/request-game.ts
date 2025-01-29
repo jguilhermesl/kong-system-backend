@@ -3,7 +3,8 @@ import { StoreDAO } from '@/DAO/store';
 import { handleErrors } from '@/utils/handle-errors';
 
 export const requestGame = async (req: any, res: any) => {
-  const { userId, storeItemId } = req.body;
+  const { storeItemId } = req.body;
+  const { sub } = req.userState;
   const storeDAO = new StoreDAO();
   const pointsUsageDAO = new PointsUsageDAO();
 
@@ -14,7 +15,7 @@ export const requestGame = async (req: any, res: any) => {
     }
     const points = storeItem.price;
 
-    await pointsUsageDAO.createOne({ userId, storeItemId, points, status: 'pending' });
+    await pointsUsageDAO.createOne({ userId: sub, storeItemId, points, status: 'pending' });
     res.status(201).json({ message: 'Game request recorded successfully.' });
   } catch (err) {
     const errorMessage = handleErrors(err)

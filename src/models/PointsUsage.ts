@@ -1,3 +1,4 @@
+import { Store } from "./Store";
 import { User } from "./User";
 
 export interface PointsUsage {
@@ -7,5 +8,6 @@ export interface PointsUsage {
   createdAt: string,
   points: number,
   status: "pending" | "approved",
-  storeItemId: string
+  storeItemId: string,
+  storeItem?: Store
 }
