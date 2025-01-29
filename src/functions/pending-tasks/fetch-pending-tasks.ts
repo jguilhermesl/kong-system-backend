@@ -17,7 +17,8 @@ export const fetchPendingTasks = async (req: any, res: any) => {
         type: "point-usage",
         gameId: pU.storeItemId,
         game: pU.storeItem,
-        createdAt: pU.createdAt
+        price: pU.storeItem?.price,
+        createdAt: pU.createdAt,
       }
     })
 

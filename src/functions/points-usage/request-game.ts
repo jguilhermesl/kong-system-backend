@@ -13,7 +13,18 @@ export const requestGame = async (req: any, res: any) => {
     if (!storeItem) {
       throw new Error('Store item not found.');
     }
+
     const points = storeItem.price;
+
+    const alreadyRequestThisStore = await pointsUsageDAO.findOne({
+      storeItemId,
+      userId: sub,
+      status: (status) => ["pending", "accepted"].includes(status)
+    })
+
+    if (alreadyRequestThisStore) {
+      throw new Error('Você já resgatou esse item.');
+    }
 
     await pointsUsageDAO.createOne({ userId: sub, storeItemId, points, status: 'pending' });
     res.status(201).json({ message: 'Game request recorded successfully.' });

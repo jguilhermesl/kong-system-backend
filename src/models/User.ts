@@ -3,7 +3,7 @@ export interface User {
   name: string,
   role: "admin" | "client",
   email: string,
-  cpf: string,
+  cpf?: string,
   phone: string,
   passwordHash: string,
   createdAt: Date | string,

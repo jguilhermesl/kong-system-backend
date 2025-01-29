@@ -9,7 +9,7 @@ const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.enum(["admin", "client"]).default("client"),
   email: z.string().email("Invalid email format"),
-  cpf: z.string().min(11, "CPF must be at least 11 characters"),
+  cpf: z.string().min(11, "CPF must be at least 11 characters").optional(),
   phone: z.string().min(8, "Phone number must be at least 8 characters"),
   password: z.string().min(4, "Password must be at least 4 characters").optional(),
   console: z.enum(["PS4", "PS5"]).optional()
