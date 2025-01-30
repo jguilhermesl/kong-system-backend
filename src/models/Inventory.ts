@@ -17,6 +17,7 @@ export interface InventoryItem {
   accountValue: number,
   sold: boolean,
   client?: User,
-  soldBy?: string,
+  soldBy?: User,
+  soldById: string,
   range?: number
 }

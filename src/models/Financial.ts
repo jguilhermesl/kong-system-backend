@@ -9,12 +9,12 @@ export interface Financial {
   commissioning: number,
   paidOrRefunded: boolean,
   sellerId: string,
-  seller: User,
+  seller?: User,
   obs: string,
   clientNumber: string,
-  client: User,
+  client?: User,
   createdById: string,
-  createdBy: User,
-  id: string,
+  createdBy?: User,
+  id?: string,
   range?: number
 }

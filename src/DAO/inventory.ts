@@ -37,17 +37,18 @@ export class InventoryDAO {
       range: `${DEFAULT_SHEET_NAME}!A${DATA_STARTS_AT_LINE}:AB`,
     });
 
-    const clients = await usersDao.findMany({});
+    const users = await usersDao.findMany({});
 
     const data =
       response.data.values?.map((item, index) => {
 
-        const client = clients.find((c) => c.phone === item[19]) || {
+        const client = users.find((c) => c.phone === item[19]) || {
           name: item[18],
           phone: item[19],
           email: item[20],
           console: item[22]
         };
+        const soldBy = users.find((c) => c.id === item[21])
 
         return {
           id: item[27],
@@ -66,7 +67,8 @@ export class InventoryDAO {
           accountValue: item[12],
           sold: item[13],
           client,
-          soldBy: item[21],
+          soldById: item[21],
+          soldBy,
           range: index
         };
       }
@@ -250,7 +252,7 @@ export class InventoryDAO {
       data.client?.name,
       data.client?.phone,
       data.client?.email,
-      data.soldBy,
+      data.soldById,
       data.client?.console,
       '',
       false,
