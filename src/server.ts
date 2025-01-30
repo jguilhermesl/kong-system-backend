@@ -12,6 +12,7 @@ import { routerStatement } from "./functions/statement/routes";
 import { routerStore } from "./functions/store/routes";
 import { routerPendingTasks } from "./functions/pending-tasks/routes";
 import { routerPointsUsage } from "./functions/points-usage/routes";
+import { routerFinancial } from "./functions/financial /routes";
 
 const PORT = env.PORT;
 const app = express();
@@ -30,5 +31,6 @@ app.use(routerStatement);
 app.use(routerStore);
 app.use(routerPendingTasks);
 app.use(routerPointsUsage);
+app.use(routerFinancial)
 
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}!!!`));
