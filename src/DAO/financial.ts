@@ -58,7 +58,7 @@ export class FinancialDAO {
             saleValue: item[3],
             productValue: item[4],
             commissioning: item[5],
-            paidOrRefunded: item[6],
+            paidOrRefunded: item[6] === "TRUE",
             seller,
             obs: item[8],
             clientNumber: item[9],

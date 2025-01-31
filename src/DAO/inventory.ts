@@ -3,6 +3,7 @@ import { env } from '../env';
 import { InventoryItem } from '@/models/Inventory';
 import { UsersDAO } from './users';
 import { formatCurrencyToNumber } from '@/utils/format-currency-to-number';
+import { randomUUID } from 'crypto';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
@@ -119,7 +120,7 @@ export class InventoryDAO {
   }
 
   async createOne(values: Omit<DaoType, "id" | "createdAt">) {
-    const row = this.getRow(values);
+    const row = this.getRow({ ...values, id: randomUUID() });
     await sheets.spreadsheets.values.append({
       spreadsheetId: this.spreadsheetId,
       range: `${DEFAULT_SHEET_NAME}`,
@@ -144,8 +145,6 @@ export class InventoryDAO {
 
   async updateOne(where: Partial<Record<keyof DaoType, (value: any) => boolean>>, updatedValues: Partial<DaoType>) {
     const item = await this.findOne(where);
-
-    console.log(item)
 
     if (!item) {
       return null;
