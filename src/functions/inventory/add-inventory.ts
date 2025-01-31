@@ -2,6 +2,9 @@ import { z } from "zod";
 import { handleErrors } from '@/utils/handle-errors';
 import { env } from "@/env";
 import { google } from "googleapis";
+import { FinancialDAO } from "@/DAO/financial";
+import { games } from "googleapis/build/src/apis/games";
+import { formatCurrencyToNumber } from "@/utils/format-currency-to-number";
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
@@ -29,28 +32,31 @@ const addInventorySchema = z.object({
   purchaseValue: z.string(),
   primaryValue: z.string(),
   secondaryValue: z.string(),
-  createdById: z.string(),
 });
 
 export const addInventory = async (req: any, res: any) => {
   try {
     // Valida os dados recebidos no request
     const validatedData = addInventorySchema.parse(req.body);
+    const sub = req.userState.sub;
 
     const range = `${DEFAULT_SHEET_NAME}!B7:O7`;
     const values = [
       [
         validatedData.game,
         validatedData.email,
+        '',
         validatedData.emailPassword,
+        '',
         validatedData.psnUser || '',
         validatedData.psnPassword,
         validatedData.gameVersion,
+        'Primaria',
         validatedData.gameValue,
         validatedData.purchaseValue,
         validatedData.primaryValue,
         validatedData.secondaryValue,
-        validatedData.createdById,
+        sub,
       ],
     ];
 
@@ -63,30 +69,23 @@ export const addInventory = async (req: any, res: any) => {
     });
 
     // Executa o Google Script
-    const scriptId = 'AKfycbw_F1gz5EdqEp_kjrKIG1v-1gFCmV-AwjoLHHIooM6D89nEA55HFWdTnJe-SK3KM6GxnQ';
-    const script = google.script({ version: 'v1', auth });
+    await fetch('https://script.google.com/macros/s/AKfycbwUYBiiREmM4N7w2TUuHswLIMaAaZ2G-e8t48FhKAYbjCAh8mGZ4hc8yTs-_Kk1edTNeg/exec')
+      .then(response => response.json())
+      .then(data => console.log('Google Script executed successfully:', data))
+      .catch(error => console.error('Error executing Google Script:', error));
 
-    try {
-      const scriptResponse = await script.scripts.run({
-        scriptId,
-        requestBody: {
-          function: 'KONG2',
-          parameters: [],
-        },
-      });
+    const financialDAO = new FinancialDAO();
+    await financialDAO.createOne({
+      createdById: sub,
+      commissioning: 0,
+      productName: validatedData.game,
+      productType: "COMPRA DE JOGO",
+      productValue: formatCurrencyToNumber(validatedData.purchaseValue),
+    })
 
-      const scriptResult = scriptResponse?.data?.response?.result;
-      console.log('Resultado do script:', scriptResult);
-
-      res.status(201).json({
-        message: 'Inventory added successfully and data set in the spreadsheet.',
-        scriptResult,
-      });
-    } catch (scriptError) {
-      const errorMessage = handleErrors(scriptError);
-      console.error('Erro ao executar o script:', scriptError);
-      return res.status(500).json({ message: errorMessage });
-    }
+    res.status(201).json({
+      message: 'Inventory added successfully and data set in the spreadsheet.',
+    });
   } catch (validationError) {
     const errorMessage = handleErrors(validationError);
     console.error('Erro na validação:', validationError);

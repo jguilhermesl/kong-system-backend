@@ -2,6 +2,7 @@ import { google } from 'googleapis';
 import { env } from '../env';
 import { UsersDAO } from './users';
 import { Financial } from '@/models/Financial';
+import { randomUUID } from 'node:crypto';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
@@ -233,7 +234,7 @@ export class FinancialDAO {
       data.obs,
       data.clientNumber,
       data.createdById,
-      data.id,
+      data.id || randomUUID(),
     ].map((item, idx) => {
       return item || originalRow?.[idx];
     });
