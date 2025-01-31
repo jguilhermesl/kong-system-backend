@@ -6,7 +6,7 @@ import { z } from "zod";
 const financialSchema = z.object({
   productType: z.string().min(1, "Product type is required"),
   productName: z.string().min(1, "Product name is required"),
-  saleValue: z.number().positive("Sale value must be positive"),
+  saleValue: z.number().positive("Sale value must be positive").optional().nullable(),
   productValue: z.number().positive("Product value must be positive"),
   clientId: z.string().min(1, "Client id is required").optional(),
 });
@@ -31,7 +31,7 @@ export const addFinancial = async (req: any, res: any) => {
       productName: parsedData.productName,
       productType: parsedData.productType,
       productValue: parsedData.productValue,
-      saleValue: parsedData.saleValue,
+      saleValue: 0,
       sellerId: ""
     });
 

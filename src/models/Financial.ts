@@ -5,7 +5,7 @@ export interface Financial {
   productType: string,
   productName: string,
   saleValue: number,
-  productValue: number,
+  productValue?: number,
   commissioning: number,
   paidOrRefunded: boolean,
   sellerId: string,
