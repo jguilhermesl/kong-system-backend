@@ -1,0 +1,16 @@
+export interface Game {
+  id: string,
+  game: string,
+  gameVersion: string,
+  primaryInInventory: boolean,
+  secondaryInInventory: boolean,
+  inPromo: boolean,
+  originalPrice: string,
+  currentPrice: string,
+  primaryValue: string,
+  secondaryValue: string,
+  rating: string,
+  category: string,
+  imageLink: string,
+  status: string,
+}
