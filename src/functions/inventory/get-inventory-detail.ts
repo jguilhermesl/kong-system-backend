@@ -4,17 +4,22 @@ import { handleErrors } from "@/utils/handle-errors";
 export const getInventoryDetail = async (req: any, res: any) => {
   try {
     const dao = new InventoryDAO();
-    const inventoryId = req.params.id;
+    const { id } = req.params;
 
-    const data = await dao.findOne({
-      id: (id) => id === inventoryId
-    });
+    if (!id) {
+      return res.status(400).send({ message: "Inventory ID is required" });
+    }
 
-    return res.status(200).send({ data: data });
+    const item = await dao.findOne({ id });
+
+    if (!item) {
+      return res.status(404).send({ message: "Inventory item not found" });
+    }
+
+    return res.status(200).send({ data: item });
   } catch (err) {
-    console.log(err)
-    const errorMessage = handleErrors(err)
+    const errorMessage = handleErrors(err);
 
     return res.status(500).send({ message: errorMessage });
   }
-}
+};

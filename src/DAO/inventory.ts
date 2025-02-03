@@ -9,7 +9,7 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
 const DEFAULT_SHEET_NAME = 'TABELA DE JOGOS';
 const VALUE_INPUT_OPTION = 'RAW';
-const DATA_STARTS_AT_LINE = 16;
+const DATA_STARTS_AT_LINE = 15;
 
 type DaoType = InventoryItem;
 

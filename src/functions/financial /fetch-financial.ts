@@ -8,6 +8,7 @@ export const fetchFinancial = async (req: any, res: any) => {
     const financial = await financialDAO.findMany({});
 
     const sortedFinancial = financial.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     res.status(200).json({ data: sortedFinancial });
   } catch (err) {
     const errorMessage = handleErrors(err)
