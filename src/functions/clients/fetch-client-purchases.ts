@@ -28,7 +28,7 @@ export const fetchClientPurchases = async (req: any, res: any) => {
         accountType: purchase.accountType,
         accountValue: purchase.accountValue,
         email: purchase.email,
-        password: purchase.psnPassword
+        psnPassword: purchase.psnPassword,
       },
       createdAt: new Date(purchase.soldAt || "")
     }));

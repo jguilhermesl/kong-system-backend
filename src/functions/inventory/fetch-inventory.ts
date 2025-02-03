@@ -14,7 +14,7 @@ export const fetchInventory = async (req: any, res: any) => {
     }
 
     if (sold) {
-      filters.soldAt = (soldAt) => sold === "true" ? !!soldAt : !soldAt
+      filters.sold = (sold) => sold === "true" ? sold === "TRUE" : sold === "FALSE"
     }
 
     const data = await dao.findMany(filters);

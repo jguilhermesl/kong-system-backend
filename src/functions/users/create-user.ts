@@ -29,8 +29,18 @@ export const createUser = async (req: Request, res: Response) => {
       email: (email) => email === parsedData.email
     })
 
-    if (userAlreadyExists) {
+    if (userAlreadyExists && userAlreadyExists.passwordHash) {
       return res.status(401).send({ message: "Usuário já existe." })
+    }
+
+    if (userAlreadyExists) {
+      const data = await dao.updateOne({
+        id: (id) => id === userAlreadyExists.id
+      }, {
+        ...parsedData,
+        passwordHash
+      })
+      return res.status(200).send({ data: data });
     }
 
     const code = generateRandomCode();

@@ -4,6 +4,7 @@ import { InventoryItem } from '@/models/Inventory';
 import { UsersDAO } from './users';
 import { formatCurrencyToNumber } from '@/utils/format-currency-to-number';
 import { randomUUID } from 'crypto';
+import { formatCurrency } from '@/utils/format-currency';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
@@ -64,8 +65,8 @@ export class InventoryDAO {
           gameVersion: item[8],
           accountType: item[9],
           gameValue: item[10],
-          purchaseValue: item[11],
-          accountValue: item[12],
+          purchaseValue: formatCurrency(item[11]),
+          accountValue: formatCurrency(item[12]),
           sold: item[13],
           client,
           soldById: item[21],

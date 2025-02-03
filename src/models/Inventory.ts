@@ -14,7 +14,7 @@ export interface InventoryItem {
   accountType: "Primaria" | "Secundaria",
   gameValue: string,
   purchaseValue: string,
-  accountValue: number,
+  accountValue: string,
   sold: boolean,
   client?: User,
   soldBy?: User,
