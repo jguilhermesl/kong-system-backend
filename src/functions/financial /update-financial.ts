@@ -15,6 +15,14 @@ export const updateFinancial = async (req: any, res: any) => {
     const { id: financialId } = req.params;
     const parsedData = financialSchema.parse(req.body);
 
+    const existsFinancial = await financialDAO.findOne({
+      id: (itemId) => itemId === financialId
+    })
+
+    if (!existsFinancial) {
+      return res.status(404).send({ message: "Financial record not found" });
+    }
+
     const updatedItem = await financialDAO.updateOne({
       id: (itemId) => itemId === financialId
     }, {
@@ -24,9 +32,7 @@ export const updateFinancial = async (req: any, res: any) => {
       paidOrRefunded: parsedData.paidOrRefunded
     });
 
-    if (!updatedItem) {
-      return res.status(404).send({ message: "Financial record not found" });
-    }
+
 
     return res.status(200).send({ message: "Financial record updated successfully" });
   } catch (err) {
