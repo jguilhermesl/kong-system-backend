@@ -69,7 +69,7 @@ export const addInventory = async (req: any, res: any) => {
     });
 
     // Executa o Google Script
-    await fetch('https://script.google.com/macros/s/AKfycbwUYBiiREmM4N7w2TUuHswLIMaAaZ2G-e8t48FhKAYbjCAh8mGZ4hc8yTs-_Kk1edTNeg/exec')
+    await fetch('https://script.google.com/macros/s/AKfycbxcgtgpnn5s8uegW34hGCN2YpodciXvt2gLoDBzlh8Lzn0eG2dm2GGggBiV9Ck6q4Be/exec')
       .then(response => response.json())
       .then(data => console.log('Google Script executed successfully:', data))
       .catch(error => console.error('Error executing Google Script:', error));
