@@ -82,23 +82,31 @@ export class UsersDAO {
     }) || null;
   }
 
-  async findMany(where: Partial<Record<keyof DaoType, (value: any) => boolean>>) {
+  async findMany(
+    where: Partial<Record<keyof DaoType, (value: any) => boolean>>,
+    options?: { operator?: 'and' | 'or' }
+  ) {
     const data = await this.getData();
+    const operator = options?.operator ?? 'and';
 
     if (Object.keys(where).length === 0) {
       return data;
     }
 
     return data.filter((row) => {
-      return Object.keys(where).every((key) => {
-        const condition = where[key as keyof DaoType];
-
-        if (typeof condition === 'function') {
-          return condition(row[key as keyof DaoType]);
-        }
-
-        return row[key as keyof DaoType] === condition;
-      });
+      return operator === 'and'
+        ? Object.keys(where).every((key) => {
+          const condition = where[key as keyof DaoType];
+          return typeof condition === 'function'
+            ? condition(row[key as keyof DaoType])
+            : row[key as keyof DaoType] === condition;
+        })
+        : Object.keys(where).some((key) => {
+          const condition = where[key as keyof DaoType];
+          return typeof condition === 'function'
+            ? condition(row[key as keyof DaoType])
+            : row[key as keyof DaoType] === condition;
+        });
     });
   }
 
