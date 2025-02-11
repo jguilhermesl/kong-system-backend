@@ -1,5 +1,6 @@
 import { PointsUsageDAO } from '@/DAO/points-usage';
 import { StoreDAO } from '@/DAO/store';
+import { getUserStatement } from '@/utils/get-user-statement';
 import { handleErrors } from '@/utils/handle-errors';
 
 export const requestGame = async (req: any, res: any) => {
@@ -12,6 +13,12 @@ export const requestGame = async (req: any, res: any) => {
     const storeItem = await storeDAO.findOne({ id: (id) => id === storeItemId });
     if (!storeItem) {
       throw new Error('Store item not found.');
+    }
+
+    const { balance } = await getUserStatement(sub);
+
+    if (balance < storeItem.price) {
+      throw new Error('Você não possui pontos suficientes para adquirir esse item.');
     }
 
     const points = storeItem.price;

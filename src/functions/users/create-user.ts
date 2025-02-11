@@ -12,7 +12,8 @@ const userSchema = z.object({
   cpf: z.string().min(11, "CPF must be at least 11 characters").optional(),
   phone: z.string().min(8, "Phone number must be at least 8 characters"),
   password: z.string().min(4, "Password must be at least 4 characters").optional(),
-  console: z.enum(["PS4", "PS5"]).optional()
+  console: z.enum(["PS4", "PS5"]).optional(),
+  isAdminAction: z.boolean().default(false).optional()
 });
 
 export const createUser = async (req: Request, res: Response) => {
@@ -29,21 +30,22 @@ export const createUser = async (req: Request, res: Response) => {
       email: (email) => email === parsedData.email
     })
 
-    if (userAlreadyExists && userAlreadyExists.passwordHash) {
+    if ((userAlreadyExists && userAlreadyExists.passwordHash) || (userAlreadyExists && parsedData.isAdminAction)) {
       return res.status(401).send({ message: "Usuário já existe." })
     }
+
+    const code = generateRandomCode();
 
     if (userAlreadyExists) {
       const data = await dao.updateOne({
         id: (id) => id === userAlreadyExists.id
       }, {
         ...parsedData,
-        passwordHash
+        passwordHash,
+        code: userAlreadyExists.code || code
       })
       return res.status(200).send({ data: data });
     }
-
-    const code = generateRandomCode();
     const data = await dao.createOne({ ...parsedData, passwordHash, code });
 
     return res.status(200).send({ data: data });
