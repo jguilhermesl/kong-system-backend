@@ -6,15 +6,15 @@ import { handleErrors } from "@/utils/handle-errors";
 export const fetchInventory = async (req: any, res: any) => {
   try {
     const dao = new InventoryDAO();
-    const { search, sold } = req.query;
+    const { search, sold: soldQuery } = req.query;
     const filters: Partial<Record<keyof InventoryItem, (value: any) => boolean>> = {};
 
     if (search) {
       filters.game = (game) => flexibleSearch(search, game)
     }
 
-    if (sold) {
-      filters.sold = (sold) => sold === "true" ? sold === "TRUE" : sold === "FALSE"
+    if (soldQuery) {
+      filters.sold = (sold) => soldQuery === "true" ? sold === "TRUE" : sold === "FALSE"
     }
 
     const data = await dao.findMany(filters);

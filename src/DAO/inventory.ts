@@ -102,6 +102,7 @@ export class InventoryDAO {
 
   async findMany(where: Partial<Record<keyof DaoType, (value: any) => boolean>>) {
     const data = await this.getData();
+    console.log(data)
 
     if (Object.keys(where).length === 0) {
       return data;
