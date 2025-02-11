@@ -5,5 +5,5 @@ export const calculatePoints = (value: string, isIndication?: boolean) => {
 
   const points = numericValue * (isIndication ? 0.10 : 0.10);
 
-  return points;
+  return parseInt(points.toString());
 };
