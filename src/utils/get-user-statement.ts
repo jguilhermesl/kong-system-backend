@@ -16,7 +16,7 @@ export const getUserStatement = async (userId: string) => {
 
   const [dataIndications, pointsUsages, userPurchases] = await Promise.all([
     indicationsDAO.findMany({ user: (user) => user?.id === userId }),
-    pointsUsageDAO.findMany({ user: (user) => user?.id === userId, status: (status) => status === "approved" }),
+    pointsUsageDAO.findMany({ user: (user) => user?.id === userId, status: (status) => status === "approved" || status === "pending" }),
     inventoryDAO.findMany({
       client: (client) => client.phone === user?.phone,
       soldAt: (soldAt) => !!user?.createdAt && (new Date(soldAt) > new Date(user?.createdAt || "")),
