@@ -51,6 +51,7 @@ export class StoreDAO {
             type: item[5],
             createdAt: item[6],
             gameVersion: item[7],
+            isActive: item[8] === 'TRUE'
           };
         }
         ).filter((item) => !!item && !!item) as DaoType[];
@@ -215,7 +216,8 @@ export class StoreDAO {
       data.photoUrl,
       data.type,
       data.createdAt,
-      data.gameVersion
+      data.gameVersion,
+      data.isActive
     ].map((item, idx) => {
       return item || originalRow?.[idx];
     });

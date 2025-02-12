@@ -11,7 +11,9 @@ type GroupedData = {
 export const fetchStore = async (req: any, res: any) => {
   try {
     const dao = new StoreDAO();
-    const data = await dao.findMany({});
+    const data = await dao.findMany({
+      isActive: (isActive) => isActive
+    });
 
     const groupedData: GroupedData = data.reduce((acc, item) => {
       const category = item.category;

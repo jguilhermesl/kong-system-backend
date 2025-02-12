@@ -6,5 +6,6 @@ export interface Store {
   photoUrl?: string,
   createdAt: string,
   type: string,
-  gameVersion: string
+  gameVersion: string,
+  isActive: boolean
 }
