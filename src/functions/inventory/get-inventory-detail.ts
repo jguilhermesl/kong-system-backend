@@ -16,7 +16,11 @@ export const getInventoryDetail = async (req: any, res: any) => {
       return res.status(404).send({ message: "Inventory item not found" });
     }
 
-    return res.status(200).send({ data: item });
+    const connectedAccounts = (await dao.findMany({
+      email: (email) => email === item.email
+    }))
+
+    return res.status(200).send({ data: { ...item, connectedAccounts } });
   } catch (err) {
     const errorMessage = handleErrors(err);
 
