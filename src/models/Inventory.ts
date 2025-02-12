@@ -19,5 +19,6 @@ export interface InventoryItem {
   client?: User,
   soldBy?: User,
   soldById: string,
-  range?: number
+  range?: number,
+  couponUsed?: string
 }

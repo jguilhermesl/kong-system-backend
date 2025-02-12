@@ -38,16 +38,6 @@ export const addInventorySale = async (req: any, res: any) => {
       throw new Error("Estoque não encontrado.")
     }
 
-    await inventoryDAO.updateOne({
-      id: (id) => id === inventoryId
-    }, {
-      soldAt: new Date(),
-      sold: true,
-      client,
-      accountValue: parsedData.saleValue.toString(),
-      soldById: parsedData.sellerId,
-    })
-
     if (parsedData.indicationCode) {
       const indicationsDAO = new IndicationsDAO();
       const indicatorUser = await usersDAO.findOne({
@@ -67,6 +57,17 @@ export const addInventorySale = async (req: any, res: any) => {
         inventoryId: inventoryId,
       });
     }
+
+    await inventoryDAO.updateOne({
+      id: (id) => id === inventoryId
+    }, {
+      soldAt: new Date(),
+      sold: true,
+      client,
+      accountValue: parsedData.saleValue.toString(),
+      soldById: parsedData.sellerId,
+      couponUsed: parsedData.indicationCode
+    })
 
     const financialDAO = new FinancialDAO();
     await financialDAO.createOne({

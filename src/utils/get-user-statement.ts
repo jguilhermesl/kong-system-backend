@@ -20,6 +20,7 @@ export const getUserStatement = async (userId: string) => {
     inventoryDAO.findMany({
       client: (client) => client.phone === user?.phone,
       soldAt: (soldAt) => !!user?.createdAt && (new Date(soldAt) > new Date(user?.createdAt || "")),
+      couponUsed: (coupon) => !coupon
     }),
   ]);
 

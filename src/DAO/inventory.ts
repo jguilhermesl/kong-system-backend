@@ -71,7 +71,8 @@ export class InventoryDAO {
           client,
           soldById: item[21],
           soldBy,
-          range: index
+          range: index,
+          couponUsed: item[28]
         };
       }
       ).filter((item) => !!item.game) as DaoType[];
@@ -267,6 +268,7 @@ export class InventoryDAO {
       '',
       'Pendente',
       data.id,
+      data.couponUsed
     ].map((item, idx) => {
       if (originalRow) {
         return item === '' ? originalRow[idx] : item;
