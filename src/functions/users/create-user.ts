@@ -41,6 +41,7 @@ export const createUser = async (req: Request, res: Response) => {
         id: (id) => id === userAlreadyExists.id
       }, {
         ...parsedData,
+        createdAt: new Date(),
         passwordHash,
         code: userAlreadyExists.code || code
       })

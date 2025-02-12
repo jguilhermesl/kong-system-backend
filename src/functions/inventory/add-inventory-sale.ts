@@ -38,15 +38,13 @@ export const addInventorySale = async (req: any, res: any) => {
       throw new Error("Estoque não encontrado.")
     }
 
-    console.log("==> ", inventoryId)
-
     await inventoryDAO.updateOne({
       id: (id) => id === inventoryId
     }, {
       soldAt: new Date(),
       sold: true,
       client,
-      accountValue: parsedData.saleValue,
+      accountValue: parsedData.saleValue.toString(),
       soldById: parsedData.sellerId,
     })
 

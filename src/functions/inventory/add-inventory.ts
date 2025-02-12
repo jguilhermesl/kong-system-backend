@@ -3,8 +3,6 @@ import { handleErrors } from '@/utils/handle-errors';
 import { env } from "@/env";
 import { google } from "googleapis";
 import { FinancialDAO } from "@/DAO/financial";
-import { games } from "googleapis/build/src/apis/games";
-import { formatCurrencyToNumber } from "@/utils/format-currency-to-number";
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const DEFAULT_SPREADSHEET_ID = '1h3g41fvcJQUH4WEjjizqDC2pzCuGYgwrGG4APlmm9Ls';
@@ -28,10 +26,10 @@ const addInventorySchema = z.object({
   psnPassword: z.string(),
   psnUser: z.string().optional(),
   gameVersion: z.enum(["PS4", "PS5", "PS4 E PS5"]),
-  gameValue: z.string(),
-  purchaseValue: z.string(),
-  primaryValue: z.string(),
-  secondaryValue: z.string(),
+  gameValue: z.number(),
+  purchaseValue: z.number(),
+  primaryValue: z.number(),
+  secondaryValue: z.number(),
 });
 
 export const addInventory = async (req: any, res: any) => {
@@ -80,7 +78,7 @@ export const addInventory = async (req: any, res: any) => {
       commissioning: 0,
       productName: validatedData.game,
       productType: "COMPRA DE JOGO",
-      productValue: formatCurrencyToNumber(validatedData.purchaseValue),
+      productValue: validatedData.purchaseValue,
     })
 
     res.status(201).json({
