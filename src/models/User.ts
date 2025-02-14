@@ -8,5 +8,7 @@ export interface User {
   passwordHash: string,
   createdAt: Date | string,
   console?: "PS4" | "PS5",
-  code: string
+  code: string,
+  recoverPasswordCode?: string,
+  recoverPasswordValidUntil?: string
 }

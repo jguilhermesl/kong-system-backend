@@ -4,6 +4,10 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
   PORT: z.coerce.number().default(3333),
+  SMTP_PORT: z.coerce.number().default(465),
+  SMTP_HOST: z.string(),
+  EMAIL_USER: z.string(),
+  EMAIL_PASSWORD: z.string(),
   JWT_SECRET: z.string(),
   GOOGLE_ENCODED_BASE: z.string(),
 });

@@ -51,6 +51,8 @@ export class UsersDAO {
         createdAt: item[7],
         code: item[8],
         console: item[9],
+        recoverPasswordCode: item[10],
+        recoverPasswordValidUntil: item[11],
       })) as DaoType[];
 
       this.cachedData = data;
@@ -225,7 +227,9 @@ export class UsersDAO {
       data.role,
       data.createdAt = new Date(),
       data.code,
-      data.console
+      data.console,
+      data.recoverPasswordCode,
+      data.recoverPasswordValidUntil
     ];
   }
 
