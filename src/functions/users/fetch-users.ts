@@ -1,5 +1,4 @@
 import { UsersDAO } from "@/DAO/users";
-import { getUserStatement } from "@/utils/get-user-statement";
 import { handleErrors } from "@/utils/handle-errors";
 
 export const fetchUsers = async (req: any, res: any) => {
@@ -9,14 +8,7 @@ export const fetchUsers = async (req: any, res: any) => {
       createdAt: (createdAt) => !!createdAt,
     });
 
-    const users = await Promise.all(
-      data.map(async (user) => ({
-        ...user,
-        points: (await getUserStatement(user.id)).balance,
-      }))
-    );
-
-    return res.status(200).send({ data: users });
+    return res.status(200).send({ data: data });
   } catch (err) {
     const errorMessage = handleErrors(err)
 
