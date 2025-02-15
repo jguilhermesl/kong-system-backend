@@ -9,12 +9,12 @@ export const fetchUsers = async (req: any, res: any) => {
       createdAt: (createdAt) => !!createdAt,
     });
 
-    const users = data.map((user) => {
-      return {
+    const users = await Promise.all(
+      data.map(async (user) => ({
         ...user,
-        points: getUserStatement(user.id)
-      }
-    })
+        points: (await getUserStatement(user.id)).balance,
+      }))
+    );
 
     return res.status(200).send({ data: users });
   } catch (err) {
