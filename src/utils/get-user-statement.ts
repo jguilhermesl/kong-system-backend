@@ -3,6 +3,7 @@ import { InventoryDAO } from "@/DAO/inventory";
 import { PointsUsageDAO } from "@/DAO/points-usage";
 import { UsersDAO } from "@/DAO/users";
 import { calculatePoints } from "@/utils/calculate-points";
+import { parseDateBR } from "./parse-data-br";
 
 export const getUserStatement = async (userId: string) => {
   const indicationsDAO = new IndicationsDAO();
@@ -19,7 +20,7 @@ export const getUserStatement = async (userId: string) => {
     pointsUsageDAO.findMany({ user: (user) => user?.id === userId, status: (status) => status === "approved" || status === "pending" }),
     inventoryDAO.findMany({
       client: (client) => client.phone === user?.phone,
-      soldAt: (soldAt) => !!user?.createdAt && (new Date(soldAt) > new Date(user?.createdAt || "")),
+      soldAt: (soldAt) => !!user?.createdAt && (new Date(parseDateBR(soldAt)) > new Date(user?.createdAt || "")),
       couponUsed: (coupon) => !coupon
     }),
   ]);
